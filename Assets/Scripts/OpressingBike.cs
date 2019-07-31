@@ -22,6 +22,7 @@ public class OpressingBike : MonoBehaviour
         hor_inclination = Input.GetAxis("Horizontal");
         vert_inclination = Input.GetAxis("Vertical");
         speedRatio = Input.GetAxis("Accelerate") - Input.GetAxis("Brake");
+        Debug.Log(Vector3.Dot(rb.velocity, transform.forward));
     }
 
     //[Range(0,1f)]
@@ -30,8 +31,12 @@ public class OpressingBike : MonoBehaviour
     {
         rb.MoveRotation( Quaternion.AngleAxis(hor_inclination * HorizontalTorqueMax, -transform.forward)
             * Quaternion.AngleAxis(vert_inclination * VerticalTorqueMax, transform.right) * rb.rotation);
-        rb.AddForce( transform.forward * speedRatio * TractionMax);
-        rb.AddForce(Quaternion.AngleAxis(180f, transform.forward) * rb.velocity * k);
+        rb.AddRelativeForce(Vector3.forward * speedRatio * TractionMax);
+        float velocityModule = rb.velocity.magnitude;
+        //rb.velocity = Vector3.Lerp(rb.velocity, transform.forward.normalized * velocityModule, speedRatio);
+        /*rb.AddForce( transform.forward * speedRatio * TractionMax);
         //rb.AddRelativeTorque(Vector3.left * k * rb.velocity.magnitude);
+        */
+
     }
 }
