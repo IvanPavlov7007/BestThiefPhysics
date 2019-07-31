@@ -28,9 +28,10 @@ public class OpressingBike : MonoBehaviour
     public float k;
     private void FixedUpdate()
     {
-        rb.AddRelativeTorque(Vector3.back * hor_inclination * HorizontalTorqueMax);
-        rb.AddRelativeTorque(Vector3.right * vert_inclination * VerticalTorqueMax * rb.velocity.magnitude);
+        rb.MoveRotation( Quaternion.AngleAxis(hor_inclination * HorizontalTorqueMax, -transform.forward)
+            * Quaternion.AngleAxis(vert_inclination * VerticalTorqueMax, transform.right) * rb.rotation);
         rb.AddForce( transform.forward * speedRatio * TractionMax);
-        //rb.AddRelativeTorque(Vector3.left * rb.velocity.magnitude * Vector3.Angle(transform.forward, Vector3.up) * k);
+        rb.AddForce(Quaternion.AngleAxis(180f, transform.forward) * rb.velocity * k);
+        //rb.AddRelativeTorque(Vector3.left * k * rb.velocity.magnitude);
     }
 }
