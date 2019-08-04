@@ -26,13 +26,14 @@ public class OpressingBike : MonoBehaviour
     }
 
     //[Range(0,1f)]
-    public float k;
+    public float k, maxLiftingForce;
     private void FixedUpdate()
     {
         rb.MoveRotation( Quaternion.AngleAxis(hor_inclination * HorizontalTorqueMax, -transform.forward)
             * Quaternion.AngleAxis(vert_inclination * VerticalTorqueMax, transform.right) * rb.rotation);
         rb.AddRelativeForce(Vector3.forward * speedRatio * TractionMax);
         float velocityModule = rb.velocity.magnitude;
+        rb.AddRelativeForce(Vector3.up * (k - vert_inclination) * speedRatio * maxLiftingForce);
         //rb.velocity = Vector3.Lerp(rb.velocity, transform.forward.normalized * velocityModule, speedRatio);
         /*rb.AddForce( transform.forward * speedRatio * TractionMax);
         //rb.AddRelativeTorque(Vector3.left * k * rb.velocity.magnitude);

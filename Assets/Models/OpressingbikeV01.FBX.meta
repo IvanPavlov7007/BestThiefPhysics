@@ -1,36 +1,14 @@
 fileFormatVersion: 2
-guid: 8df2afec8b178fe4e8a5e3728c70e20a
+guid: ab457e9bcbfc41a4e9f05d565de96d4b
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: BackWind
-    100002: BackWind001
-    100004: ForthWind
-    100006: ForthWind001
-    100008: //RootNode
-    100010: OpressingBike
-    400000: BackWind
-    400002: BackWind001
-    400004: ForthWind
-    400006: ForthWind001
-    400008: //RootNode
-    400010: OpressingBike
+    100000: //RootNode
+    400000: //RootNode
     2100000: No Name
-    2300000: BackWind
-    2300002: BackWind001
-    2300004: ForthWind
-    2300006: ForthWind001
-    2300008: OpressingBike
-    3300000: BackWind
-    3300002: BackWind001
-    3300004: ForthWind
-    3300006: ForthWind001
-    3300008: OpressingBike
-    4300000: OpressingBike
-    4300002: ForthWind
-    4300004: BackWind
-    4300006: BackWind001
-    4300008: ForthWind001
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: OpressingBikeA
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -62,7 +40,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 50
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
