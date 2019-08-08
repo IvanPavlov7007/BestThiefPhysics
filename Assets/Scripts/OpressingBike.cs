@@ -7,7 +7,7 @@ public class OpressingBike : MonoBehaviour
 {
     private Rigidbody rb;
     private float hor_inclination, vert_inclination, speedRatio;
-    public float VerticalTorqueMax, HorizontalTorqueMax, TractionMax;
+    public float VerticalTorqueMax, HorizontalTorqueMax, TractionMax, velocity;
     void Áwake()
     {
         hor_inclination = 0; vert_inclination = 0; speedRatio = 0;
@@ -23,6 +23,7 @@ public class OpressingBike : MonoBehaviour
         vert_inclination = Input.GetAxis("Vertical");
         speedRatio = Input.GetAxis("Accelerate") - Input.GetAxis("Brake");
         Debug.Log(Vector3.Dot(rb.velocity, transform.forward));
+        velocity = rb.velocity.magnitude;
     }
 
     //[Range(0,1f)]
@@ -39,5 +40,9 @@ public class OpressingBike : MonoBehaviour
         //rb.AddRelativeTorque(Vector3.left * k * rb.velocity.magnitude);
         */
 
+    }
+    private void OnDrawGizmos()
+    {
+        UnityEditor.Handles.Label(transform.position - transform.right, velocity.ToString());
     }
 }
