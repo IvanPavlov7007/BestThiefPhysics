@@ -30,7 +30,6 @@ public class CameraFollowing : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 targetPosition = focus.position + focus.rotation * focusCamDeltaPos;
-        Debug.DrawRay(focus.position, focus.rotation * focusCamDeltaPos ,Color.red);
         transform.SetPositionAndRotation(Vector3.SmoothDamp(transform.position, targetPosition, ref smoothVelocity, smoothTime),
                                          Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(focus.position - transform.position, focus.up), rotateRatio)
             ) ;
