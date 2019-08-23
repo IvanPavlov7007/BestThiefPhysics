@@ -5,13 +5,37 @@ using System;
 
 public class OpressingBike : MonoBehaviour
 {
+    [SerializeField]
+    private float VerticalTorqueMax, HorizontalTorqueMax, TractionMax, liftingCoefficient, maxLiftingForce, torqueToVelocityCoefficient;
+    [SerializeField][Range(0f, 1f)]
+    private float accelerationStep;
+    [SerializeField][Range(0f, 1f)]
+    private float accelerationBrakeStep;
+    [SerializeField][Range(0f, 1f)]
+    private float accelerationLoss;
+    [SerializeField][Range(0f,1f)]
+    private float initialLiftingRatio;
+
+    [SerializeField]
+    private GUIStyle customGizmosGUIStyle;
+
     private Rigidbody rb;
+
     private float hor_inclination, vert_inclination, speedRatio;
-    public float VerticalTorqueMax, HorizontalTorqueMax, TractionMax, displayVelocity;
 
-    public GUIStyle customGizmosGUIStyle;
+    public float DisplayVelocity
+    {
+        get;
+        private set;
+    }
 
-    void Áwake()
+    public float SpeedRatio
+    {
+        get { return speedRatio; }
+        private set { }
+    }
+
+    void Awake()
     {
         hor_inclination = 0; vert_inclination = 0; speedRatio = 0;
     }
@@ -24,35 +48,49 @@ public class OpressingBike : MonoBehaviour
     {
         hor_inclination = Input.GetAxis("Horizontal");
         vert_inclination = Input.GetAxis("Vertical");
-        speedRatio = Input.GetAxis("Accelerate") - Input.GetAxis("Brake");
-        Debug.Log(Vector3.Dot(rb.velocity, transform.forward));
-        //Debug.DrawRay(transform.position, rb.velocity, Color.green);
-        displayVelocity = rb.velocity.magnitude;
+        if (Input.GetAxis("Accelerate") != 0)
+            speedRatio += accelerationStep * Time.deltaTime;
+        else if (Input.GetAxis("Brake") != 0)
+            speedRatio -= accelerationBrakeStep * Time.deltaTime;
+        else
+            speedRatio += accelerationLoss * Time.deltaTime * -Mathf.Sign(SpeedRatio);
+        speedRatio = Mathf.Clamp(speedRatio, -1f,1f);
+        DisplayVelocity = rb.velocity.magnitude;
     }
 
-    //[Range(0,1f)]
-    public float k, maxLiftingForce;
     private void FixedUpdate()
     {
-        rb.MoveRotation( Quaternion.AngleAxis(hor_inclination * HorizontalTorqueMax, -transform.forward)
-            * Quaternion.AngleAxis(vert_inclination * VerticalTorqueMax, transform.right) * rb.rotation);
-        /*rb.AddRelativeForce(Vector3.forward * speedRatio * TractionMax);
-        float velocityModule = rb.velocity.magnitude;
-        rb.AddRelativeForce(Vector3.up * (k - vert_inclination) * speedRatio * maxLiftingForce);*/
-        float dot = Vector3.Dot(transform.forward, rb.velocity);
-        float velocityMagnitude = rb.velocity.magnitude;
-        if (velocityMagnitude != 0)
-            rb.AddForce((transform.forward * dot - rb.velocity) * k * dot / velocityMagnitude);
-        //rb.velocity = Vector3.Lerp(rb.velocity, transform.forward.normalized * velocityModule, speedRatio);
-        /*rb.AddForce( transform.forward * speedRatio * TractionMax);
-        //rb.AddRelativeTorque(Vector3.left * k * rb.velocity.magnitude);
-        */
+        Vector3 forward = transform.forward;
+        Vector3 velocity = rb.velocity;
+        
+        //TODO: Make velocity dependent
+        //control the rotation
+        rb.AddRelativeTorque(Vector3.right * vert_inclination * VerticalTorqueMax);
+        rb.AddRelativeTorque(Vector3.back * hor_inclination * HorizontalTorqueMax);
 
+        //TODO: Make velocity dependent
+        //head the nose alnong the velocity vector
+        float dot = Vector3.Dot(forward, velocity);
+        float velocityMagnitude = velocity.magnitude;
+        rb.AddTorque(Vector3.Cross(forward, velocity) * torqueToVelocityCoefficient);// * Mathf.Sin(Vector3.Angle(forward, velocity) / 360f * Mathf.PI)
+
+        //the lifting force 
+        if (velocityMagnitude != 0)
+            rb.AddForce((forward * dot - velocity) * dot / velocityMagnitude * (AngleSmaller90(forward, velocity) ? 1f : 0f) * liftingCoefficient * Mathf.Clamp01(initialLiftingRatio + speedRatio));
+        //the traction force
+        if ( speedRatio > 0 || AngleSmaller90(forward, velocity))
+            rb.AddRelativeForce(Vector3.forward * speedRatio * TractionMax);
+
+    }
+
+    private bool AngleSmaller90(Vector3 a, Vector3 b)
+    {
+        return Vector3.Angle(a, b) < 90f;
     }
     private void OnDrawGizmos()
     {
         
-        UnityEditor.Handles.Label(transform.position - (transform.right - transform.up) * 2f, "Velocity: " + displayVelocity.ToString(), customGizmosGUIStyle);
+        UnityEditor.Handles.Label(transform.position - (transform.right - transform.up) * 2f, "Velocity: " + DisplayVelocity.ToString(), customGizmosGUIStyle);
         if(rb != null)
             UnityEditor.Handles.ArrowHandleCap(0, transform.position, Quaternion.FromToRotation(Vector3.forward, rb.velocity), 3f, EventType.Repaint);
     }

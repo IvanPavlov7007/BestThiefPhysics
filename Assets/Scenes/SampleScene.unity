@@ -544,7 +544,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
   m_LocalRotation: {x: 0.054688077, y: 0, z: 0, w: 0.9985035}
-  m_LocalPosition: {x: 0.21, y: 6.9700003, z: -4.54}
+  m_LocalPosition: {x: 0.21, y: 188.15, z: -184.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -562,9 +562,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4940722a61c793439c194fd86aa2608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CamDistance: 5.402314
+  CamDistance: 6
   smoothTime: 0.03
   rotateRatio: 0.4
+  rotationSensitivity: 0.3
+  fieldOfViewFromVelocityCoefficient: 100
+  minFieldOfView: 60
+  maxFieldOfView: 70
+  bike: {fileID: 1503836620}
   focus: {fileID: 2018204725}
 --- !u!1001 &787794622
 PrefabInstance:
@@ -749,7 +754,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1503836618}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.21, y: 5.09, z: 0.83}
+  m_LocalPosition: {x: 0.21, y: 186.7, z: -179.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 877074691}
@@ -772,10 +777,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c036d851cd871b54f9b3fd5733a12cdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VerticalTorqueMax: 1
-  HorizontalTorqueMax: 3
+  VerticalTorqueMax: 1000
+  HorizontalTorqueMax: 300
   TractionMax: 8000
-  velocity: 0
+  displayVelocity: 0
+  liftingCoefficient: 1000
+  maxLiftingForce: 12000
+  torqueToVelocityCoefficient: 10
+  accelerationStep: 0.3
+  accelerationBrakeStep: 1
+  accelerationLoss: 0.5
+  initialLiftingRatio: 0.101
   customGizmosGUIStyle:
     m_Name: 
     m_Normal:
@@ -843,8 +855,6 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 1
     m_StretchHeight: 0
-  k: 0
-  maxLiftingForce: 12000
 --- !u!54 &1503836621
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -854,8 +864,8 @@ Rigidbody:
   m_GameObject: {fileID: 1503836618}
   serializedVersion: 2
   m_Mass: 300
-  m_Drag: 0.2
-  m_AngularDrag: 0.1
+  m_Drag: 0
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -885,7 +895,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2018204724}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.2899998, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1503836619}
