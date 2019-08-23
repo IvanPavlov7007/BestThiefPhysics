@@ -62,6 +62,8 @@ public class OpressingBike : MonoBehaviour
     {
         Vector3 forward = transform.forward;
         Vector3 velocity = rb.velocity;
+
+        //TODO: Make ALL the things below MASS dependent( so that some of the constants can go away)
         
         //TODO: Make velocity dependent
         //control the rotation
@@ -76,16 +78,18 @@ public class OpressingBike : MonoBehaviour
 
         //the lifting force 
         if (velocityMagnitude != 0)
-            rb.AddForce((forward * dot - velocity) * dot / velocityMagnitude * (AngleSmaller90(forward, velocity) ? 1f : 0f) * liftingCoefficient * Mathf.Clamp01(initialLiftingRatio + speedRatio));
+            rb.AddForce((forward * dot - velocity) * dot / velocityMagnitude * (AngleSmaller(forward, velocity, 90f) ? 1f : 0f) * liftingCoefficient * Mathf.Clamp01(initialLiftingRatio + speedRatio));
+        
+        //TODO: Make the negative(braking) force velocity dependent, to prevent fixing in the midair
         //the traction force
-        if ( speedRatio > 0 || AngleSmaller90(forward, velocity))
+        if ( speedRatio > 0 || AngleSmaller(forward, velocity, 90f))
             rb.AddRelativeForce(Vector3.forward * speedRatio * TractionMax);
 
     }
 
-    private bool AngleSmaller90(Vector3 a, Vector3 b)
+    private bool AngleSmaller(Vector3 a, Vector3 b, float angle)
     {
-        return Vector3.Angle(a, b) < 90f;
+        return Vector3.Angle(a, b) < angle;
     }
     private void OnDrawGizmos()
     {
