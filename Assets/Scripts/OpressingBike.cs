@@ -95,7 +95,7 @@ public class OpressingBike : MonoBehaviour
     {
         
         UnityEditor.Handles.Label(transform.position - (transform.right - transform.up) * 2f, "Velocity: " + DisplayVelocity.ToString(), customGizmosGUIStyle);
-        if(rb != null)
+        if(rb != null && rb.velocity.magnitude > 0.5f)
             UnityEditor.Handles.ArrowHandleCap(0, transform.position, Quaternion.FromToRotation(Vector3.forward, rb.velocity), 3f, EventType.Repaint);
     }
 }
