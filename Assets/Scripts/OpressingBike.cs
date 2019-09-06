@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class OpressingBike : MonoBehaviour
+public class OpressingBike : Vehicle
 {
     [SerializeField]
     private float VerticalTorqueMax, HorizontalTorqueMax, TractionMax, liftingCoefficient, maxLiftingForce, torqueToVelocityCoefficient;
@@ -19,15 +19,9 @@ public class OpressingBike : MonoBehaviour
     [SerializeField]
     private GUIStyle customGizmosGUIStyle;
 
-    private Rigidbody rb;
-
     private float hor_inclination, vert_inclination, speedRatio;
 
-    public float DisplayVelocity
-    {
-        get;
-        private set;
-    }
+    
 
     public float SpeedRatio
     {
@@ -38,10 +32,6 @@ public class OpressingBike : MonoBehaviour
     void Awake()
     {
         hor_inclination = 0; vert_inclination = 0; speedRatio = 0;
-    }
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
     }
     
     void Update()

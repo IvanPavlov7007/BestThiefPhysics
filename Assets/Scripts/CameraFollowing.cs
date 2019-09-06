@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraFollowing : MonoBehaviour
 {
-    public OpressingBike bike;
+    public Vehicle vehicle;
     public Transform focus;
 
     [SerializeField]
@@ -35,7 +35,8 @@ public class CameraFollowing : MonoBehaviour
     }
     private void LateUpdate()
     {
-        cam.fieldOfView = minFieldOfView + bike.DisplayVelocity / fieldOfViewFromVelocityCoefficient * fieldOfViewDifference;
+        if(vehicle != null)
+            cam.fieldOfView = minFieldOfView + vehicle.DisplayVelocity / fieldOfViewFromVelocityCoefficient * fieldOfViewDifference;
     }
 
     //TODO: Make the following only in LateUpdate()
