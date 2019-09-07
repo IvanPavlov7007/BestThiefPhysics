@@ -62,11 +62,11 @@ public class OpressingBike : Vehicle
 
         //TODO: Make velocity dependent
         //head the nose alnong the velocity vector
-        float dot = Vector3.Dot(forward, velocity);
         float velocityMagnitude = velocity.magnitude;
         rb.AddTorque(Vector3.Cross(forward, velocity) * torqueToVelocityCoefficient);// * Mathf.Sin(Vector3.Angle(forward, velocity) / 360f * Mathf.PI)
 
         //the lifting force 
+        float dot = Vector3.Dot(forward, velocity);
         if (velocityMagnitude != 0)
             rb.AddForce((forward * dot - velocity) * dot / velocityMagnitude * (AngleSmaller(forward, velocity, 90f) ? 1f : 0f) * liftingCoefficient * Mathf.Clamp01(initialLiftingRatio + speedRatio));
         

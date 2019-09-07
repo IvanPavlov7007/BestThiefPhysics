@@ -5,9 +5,9 @@ using UnityEngine;
 public class HumanoidController : MonoBehaviour
 {
     [SerializeField]
-    private float maxDistanceToVehicle, minDistanceToVehicle;
+    private float maxDistanceToVehicle, minDistanceToVehicle, torqueKoefficient;
     [SerializeField]
-    private LayerMask vehiclesLayerMask;
+    private LayerMask vehiclesLayerMask, groundMask;
     private Animator animator;
     private Rigidbody rb;
     private CharacterState currentState;
@@ -20,7 +20,7 @@ public class HumanoidController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
-        currentState = new OnFeetState(rb, animator, transform, this, maxDistanceToVehicle, minDistanceToVehicle, vehiclesLayerMask);
+        SetState(typeof(OnFeetState), null);
     }
 
     // Update is called once per frame
@@ -37,15 +37,20 @@ public class HumanoidController : MonoBehaviour
         currentState.OnFixedUpdate();
     }
 
-    public void SetState(CharacterState state)
+    public void SetState(System.Type stateType, object parm)
     {
-        if (state != null)
-            currentState = state;
+        if (stateType == typeof(OnFeetState))
+            currentState = new OnFeetState(rb, animator, transform, this, maxDistanceToVehicle, minDistanceToVehicle, torqueKoefficient, vehiclesLayerMask, groundMask);
+        else if(stateType == typeof(SeatingState))
+            currentState = new SeatingState(rb, animator, transform, this, parm as Vehicle);
     }
 
+    private Coroutine stateCoroutine;
     public void StartStateCoroutine(StateCoroutine coroutine)
     {
-        StartCoroutine(coroutine());
+        if (stateCoroutine != null)
+            StopCoroutine(stateCoroutine);
+        stateCoroutine = StartCoroutine(coroutine());
     }
 }
 
@@ -71,28 +76,38 @@ public abstract class CharacterState
 
 public class OnFeetState : CharacterState
 {
-    private float maxDistanceToVehicle;
-    private float minDistanceToVehicle;
-    private int vehiclesLayerMask;
+    private float maxDistanceToVehicle, minDistanceToVehicle, torqueKoefficient;
+    private int vehiclesLayerMask,groundMask;
     private int goToVehicleTrigger = Animator.StringToHash("GoToVehicle");
-    public OnFeetState(Rigidbody rb, Animator anim, Transform transform, HumanoidController humanoidController,float maxDistanceToVehicle,float minDistanceToVehicle, int vehiclesLayerMask) : base(rb, anim, transform,humanoidController)
+    private int sittingBool = Animator.StringToHash("SittingInVehicle");
+    private int disntaceFloat = Animator.StringToHash("DistanceToTheGround");
+    public OnFeetState(Rigidbody rb, Animator anim, Transform transform, HumanoidController humanoidController, float maxDistanceToVehicle, float minDistanceToVehicle, float torqueKoefficient, int vehiclesLayerMask, int groundMask) : base(rb, anim, transform,humanoidController)
     {
         this.maxDistanceToVehicle = maxDistanceToVehicle;
         this.minDistanceToVehicle = minDistanceToVehicle;
+        this.torqueKoefficient = torqueKoefficient;
         this.vehiclesLayerMask = vehiclesLayerMask;
+        this.groundMask = groundMask;
+
+        transform.rotation = Quaternion.LookRotation(Vector3.Cross(transform.right,Vector3.up), Vector3.up);
+        animator.SetBool(sittingBool, false);
+        humanoidController.GetComponent<Collider>().enabled = true;
     }
 
     public override void OnUpdate()
     {
         if (Input.GetButtonDown("SeatInAVehicle"))
             startSeatingIntoAVehicle();
+        RaycastHit hit;
+        Physics.Raycast(new Ray(transform.position,Vector3.down),  out hit, 2000f, groundMask);
+        animator.SetFloat(disntaceFloat, hit.distance);
     }
     public override void OnFixedUpdate()
     {
-
+        //rb.AddTorque(Vector3.Cross(transform.up, Vector3.up) * torqueKoefficient);
     }
 
-    private void startSeatingIntoAVehicle()
+    public void startSeatingIntoAVehicle()
     {
         var colliders = Physics.OverlapSphere(transform.position,maxDistanceToVehicle,vehiclesLayerMask);
         if (colliders.Length > 0)
@@ -109,7 +124,8 @@ public class OnFeetState : CharacterState
         yield return new WaitUntil(
             () => { return (transform.position - vehicle.transform.position).magnitude < minDistanceToVehicle; }
             );
-        humanoidController.SetState(new SeatingState(rb, animator, transform, humanoidController, vehicle));
+        animator.ResetTrigger(goToVehicleTrigger);
+        humanoidController.SetState(typeof(SeatingState),vehicle);
         yield break;
     }
 
@@ -132,11 +148,11 @@ public class SeatingState : CharacterState
 {
     private Vehicle vehicle;
 
-    private int seatInAVehicleTrigger = Animator.StringToHash("SeatInAVehicle");
+    private int sittingBool = Animator.StringToHash("SittingInVehicle");
     public SeatingState(Rigidbody rb, Animator anim, Transform transform, HumanoidController humanoidController,Vehicle vehicle) : base(rb, anim, transform, humanoidController)
     {
         this.vehicle = vehicle;
-        animator.SetTrigger(seatInAVehicleTrigger);
+        animator.SetBool(sittingBool, true);
         animator.Update(0f);
         humanoidController.GetComponent<CapsuleCollider>().enabled = false;
 
@@ -151,5 +167,12 @@ public class SeatingState : CharacterState
     {
         transform.position = vehicle.SeatPlace.position;
         transform.rotation = vehicle.transform.rotation;
+        if (Input.GetButtonDown("SeatInAVehicle"))
+            getOutOfTheVehicle();
+    }
+
+    public void getOutOfTheVehicle()
+    {
+        humanoidController.SetState(typeof(OnFeetState),null);
     }
 }
