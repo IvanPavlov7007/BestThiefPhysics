@@ -152,8 +152,10 @@ public class OnFeetState : CharacterState
         {
             float dist = Vector3.Distance(colliders[i].transform.position, this.transform.position);
             if (dist < smallestDist)
+            {
                 smallestDist = dist;
-            nearest = colliders[i];
+                nearest = colliders[i];
+            }
         }
         return nearest;
     }

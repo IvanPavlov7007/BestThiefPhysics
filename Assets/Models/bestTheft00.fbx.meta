@@ -786,7 +786,7 @@ ModelImporter:
     - name: middle_01_r
       parentName: hand_r
       position: {x: -0.008660196, y: 0.11004199, z: -0.017686343}
-      rotation: {x: -0.060179416, y: 0.28780764, z: -0.0622015, w: 0.95376945}
+      rotation: {x: -0.06017942, y: 0.28780764, z: -0.062201504, w: 0.95376945}
       scale: {x: 1, y: 1, z: 1}
     - name: middle_02_r
       parentName: middle_01_r
