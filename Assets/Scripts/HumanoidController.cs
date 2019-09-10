@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class HumanoidController : MonoBehaviour
+public class HumanoidController : FollowingObject
 {
     [SerializeField]
     private float maxDistanceToVehicle, minDistanceToVehicle, torqueKoefficient;
@@ -11,6 +11,9 @@ public class HumanoidController : MonoBehaviour
     private Animator animator;
     private Rigidbody rb;
     private CharacterState currentState;
+
+    public event SeatingInVehicleHandler onSeat;
+    public event DisembarkingHandler onDisembark;
 
     private int horzFloat = Animator.StringToHash("Horz");
     private int vertFloat = Animator.StringToHash("Vert");
@@ -40,9 +43,15 @@ public class HumanoidController : MonoBehaviour
     public void SetState(System.Type stateType, object parm)
     {
         if (stateType == typeof(OnFeetState))
+        {
             currentState = new OnFeetState(rb, animator, transform, this, maxDistanceToVehicle, minDistanceToVehicle, torqueKoefficient, vehiclesLayerMask, groundMask);
-        else if(stateType == typeof(SeatingState))
+            (currentState as OnFeetState).onSeat += onSeat;
+        }
+        else if (stateType == typeof(SeatingState))
+        {
             currentState = new SeatingState(rb, animator, transform, this, parm as Vehicle);
+            (currentState as SeatingState).onDisembark += onDisembark;
+        }
     }
 
     private Coroutine stateCoroutine;
@@ -54,6 +63,8 @@ public class HumanoidController : MonoBehaviour
     }
 }
 
+public delegate void SeatingInVehicleHandler(Vehicle vehicle);
+public delegate void DisembarkingHandler();
 public delegate IEnumerator StateCoroutine();
 public abstract class CharacterState
 {
@@ -81,6 +92,9 @@ public class OnFeetState : CharacterState
     private int goToVehicleTrigger = Animator.StringToHash("GoToVehicle");
     private int sittingBool = Animator.StringToHash("SittingInVehicle");
     private int disntaceFloat = Animator.StringToHash("DistanceToTheGround");
+
+    public event SeatingInVehicleHandler onSeat;
+
     public OnFeetState(Rigidbody rb, Animator anim, Transform transform, HumanoidController humanoidController, float maxDistanceToVehicle, float minDistanceToVehicle, float torqueKoefficient, int vehiclesLayerMask, int groundMask) : base(rb, anim, transform,humanoidController)
     {
         this.maxDistanceToVehicle = maxDistanceToVehicle;
@@ -125,6 +139,7 @@ public class OnFeetState : CharacterState
             () => { return (transform.position - vehicle.transform.position).magnitude < minDistanceToVehicle; }
             );
         animator.ResetTrigger(goToVehicleTrigger);
+        onSeat?.Invoke(vehicle);
         humanoidController.SetState(typeof(SeatingState),vehicle);
         yield break;
     }
@@ -149,6 +164,8 @@ public class SeatingState : CharacterState
     private Vehicle vehicle;
 
     private int sittingBool = Animator.StringToHash("SittingInVehicle");
+
+    public event DisembarkingHandler onDisembark;
     public SeatingState(Rigidbody rb, Animator anim, Transform transform, HumanoidController humanoidController,Vehicle vehicle) : base(rb, anim, transform, humanoidController)
     {
         this.vehicle = vehicle;
@@ -173,6 +190,7 @@ public class SeatingState : CharacterState
 
     public void getOutOfTheVehicle()
     {
+        onDisembark?.Invoke();
         humanoidController.SetState(typeof(OnFeetState),null);
     }
 }

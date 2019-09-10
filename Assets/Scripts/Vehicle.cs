@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Vehicle : MonoBehaviour
+public class Vehicle : FollowingObject
 {
     public Transform SeatPlace;
     protected Rigidbody rb;

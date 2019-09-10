@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class CameraFollowing : MonoBehaviour
 {
-    public Vehicle vehicle;
-    public Transform focus;
+    public HumanoidController humanoidController;
 
     [SerializeField]
     private float smoothTime, rotateRatio, rotationSensitivity, fieldOfViewFromVelocityCoefficient;
@@ -13,6 +12,8 @@ public class CameraFollowing : MonoBehaviour
     [Range(0f, 180f)]
     private float minFieldOfView, maxFieldOfView;
 
+    private Vehicle vehicle;
+    private Transform focus;
     private float fieldOfViewDifference;
     private Vector3 focusCamDeltaPos, smoothVelocity;
     private Quaternion focusCamDeltaRot, mouseDeltaRot;
@@ -24,8 +25,16 @@ public class CameraFollowing : MonoBehaviour
     }
     private void Start()
     {
-        focusCamDeltaPos = transform.position - focus.position;
         cam = GetComponent<Camera>();
+        humanoidController.onDisembark += HandleHumanoidDisembark;
+        humanoidController.onSeat += HandleHumanoidSeat;
+        resetFocus(humanoidController);
+    }
+
+    public void resetFocus(FollowingObject obj)
+    {
+        focus = obj.Focus;
+        focusCamDeltaPos = obj.CameraPosition.position - focus.position;
     }
 
     private void Update()
@@ -46,5 +55,17 @@ public class CameraFollowing : MonoBehaviour
         transform.SetPositionAndRotation(Vector3.SmoothDamp(transform.position, targetPosition, ref smoothVelocity, smoothTime),
                                          Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(focus.position - transform.position, focus.up), rotateRatio)
             ) ;
+    }
+
+    private void HandleHumanoidSeat(Vehicle vehicle)
+    {
+        this.vehicle = vehicle;
+        resetFocus(vehicle);
+    }
+
+    private void HandleHumanoidDisembark()
+    {
+        vehicle = null;
+        resetFocus(humanoidController);
     }
 }
