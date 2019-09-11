@@ -27,12 +27,16 @@ public class Truster : Vehicle
     {
         float xrot = Input.GetAxis("LM_Horizontal");
         float yrot = Input.GetAxis("LM_Vertical");
+        //LeftMotor.rotation = Quaternion.LookRotation(Vector3.up, Vector3.Cross(Vector3.up, transform.right));
+        //LeftMotor.localRotation *= Quaternion.Euler(-yrot * maxRotation, xrot * maxRotation, 0f);
         LeftMotor.localRotation = lm_rotation * Quaternion.Euler(-yrot * maxRotation, xrot * maxRotation, 0f);
         xrot = Input.GetAxis("RM_Horizontal");
         yrot = Input.GetAxis("RM_Vertical");
+        //RightMotor.rotation = Quaternion.LookRotation(Vector3.up, -Vector3.Cross(Vector3.up, transform.right));
+        //RightMotor.localRotation *= Quaternion.Euler(yrot * maxRotation, -xrot * maxRotation, 0f);
         RightMotor.localRotation = rm_rotation * Quaternion.Euler(yrot * maxRotation, -xrot * maxRotation, 0f);
 
-        if(Input.GetButtonDown("LM_Bop"))
+        if (Input.GetButtonDown("LM_Bop"))
         {
             if (lbopCoroutine != null)
                 StopCoroutine(lbopCoroutine);
@@ -62,7 +66,7 @@ public class Truster : Vehicle
     }
     private void FixedUpdate()
     {
-        rb.AddTorque(Vector3.Cross(transform.up, Vector3.up) * torqueKoefficient);
+        rb.AddTorque(Vector3.Cross(-transform.up, Vector3.down) * torqueKoefficient);
         rb.AddForceAtPosition(LeftMotor.forward * maxForce * lm_force, LeftMotor.position);
         rb.AddForceAtPosition(RightMotor.forward * maxForce * rm_force, RightMotor.position);
     }

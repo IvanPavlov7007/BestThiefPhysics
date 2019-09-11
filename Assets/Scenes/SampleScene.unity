@@ -1113,7 +1113,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 902027032}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.84, z: -2.91}
+  m_LocalPosition: {x: 0, y: 2.56, z: -9.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2136734275}
@@ -1485,6 +1485,14 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: d85d2e5a1bb8eeb4dbcb034ab87301e1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: d85d2e5a1bb8eeb4dbcb034ab87301e1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: d85d2e5a1bb8eeb4dbcb034ab87301e1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -801.677
@@ -1527,6 +1535,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: d85d2e5a1bb8eeb4dbcb034ab87301e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400006, guid: d85d2e5a1bb8eeb4dbcb034ab87301e1, type: 3}
+      propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -6396,7 +6408,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.3048706, y: 0.3383789, z: 0.39764404}
-  m_Center: {x: -0.4594421, y: -1.0527954, z: 0.16531372}
+  m_Center: {x: -0.4594421, y: -1.0527954, z: 0}
 --- !u!65 &2136734272
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6409,9 +6421,9 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.3048706, y: 0.3383789, z: 0.39764404}
-  m_Center: {x: 0.45944214, y: -1.0527954, z: 0.16531372}
---- !u!65 &2136734273
-BoxCollider:
+  m_Center: {x: 0.45944214, y: -1.0527954, z: 0}
+--- !u!136 &2136734273
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -6420,9 +6432,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.78393555, y: 1.225708, z: 0.8071289}
-  m_Center: {x: 0.010314941, y: 0.006652832, z: -0.09643555}
+  m_Radius: 0.40289307
+  m_Height: 1.7108154
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.22564697, z: 0}
 --- !u!54 &2136734274
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6432,8 +6445,8 @@ Rigidbody:
   m_GameObject: {fileID: 2136734270}
   serializedVersion: 2
   m_Mass: 300
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 0.2
+  m_AngularDrag: 2
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -6464,6 +6477,6 @@ MonoBehaviour:
   RightMotor: {fileID: 1099719387}
   maxRotation: 30
   maxForce: 2000
-  torqueKoefficient: 5000
+  torqueKoefficient: 0
   bop_duration: 0.1
   bop_length: 0.1
