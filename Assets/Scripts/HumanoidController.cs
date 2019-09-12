@@ -139,6 +139,7 @@ public class OnFeetState : CharacterState
             () => { return (transform.position - vehicle.transform.position).magnitude < minDistanceToVehicle; }
             );
         animator.ResetTrigger(goToVehicleTrigger);
+        vehicle.enabled = true;
         onSeat?.Invoke(vehicle);
         humanoidController.SetState(typeof(SeatingState),vehicle);
         yield break;
@@ -193,6 +194,7 @@ public class SeatingState : CharacterState
     public void getOutOfTheVehicle()
     {
         onDisembark?.Invoke();
+        vehicle.enabled = false;
         humanoidController.SetState(typeof(OnFeetState),null);
     }
 }

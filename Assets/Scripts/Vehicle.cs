@@ -5,6 +5,7 @@ using UnityEngine;
 public class Vehicle : FollowingObject
 {
     public Transform SeatPlace;
+    public bool StraightCameraControl, canControlCamera;
     protected Rigidbody rb;
 
     private void Start()
@@ -12,9 +13,10 @@ public class Vehicle : FollowingObject
         rb = GetComponent<Rigidbody>();
     }
 
-    public float DisplayVelocity
+    public Vector3 DisplayVelocity
     {
-        get;
-        protected set;
+        get {
+                return rb == null? Vector3.zero : rb.velocity; }
+        protected set { rb.velocity = value; }
     }
 }

@@ -45,7 +45,6 @@ public class OpressingBike : Vehicle
         else
             speedRatio += accelerationLoss * Time.deltaTime * -Mathf.Sign(SpeedRatio);
         speedRatio = Mathf.Clamp(speedRatio, -1f,1f);
-        DisplayVelocity = rb.velocity.magnitude;
     }
 
     private void FixedUpdate()
@@ -83,9 +82,10 @@ public class OpressingBike : Vehicle
     }
     private void OnDrawGizmos()
     {
-        
-        UnityEditor.Handles.Label(transform.position - (transform.right - transform.up) * 2f, "Velocity: " + DisplayVelocity.ToString(), customGizmosGUIStyle);
-        if(rb != null && rb.velocity.magnitude > 0.5f)
+        if (rb != null && rb.velocity.magnitude > 0.5f)
+        {
+            UnityEditor.Handles.Label(transform.position - (transform.right - transform.up) * 2f, "Velocity: " + DisplayVelocity.magnitude.ToString(), customGizmosGUIStyle);
             UnityEditor.Handles.ArrowHandleCap(0, transform.position, Quaternion.FromToRotation(Vector3.forward, rb.velocity), 3f, EventType.Repaint);
+        }
     }
 }
