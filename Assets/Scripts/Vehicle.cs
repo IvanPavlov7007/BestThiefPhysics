@@ -8,7 +8,7 @@ public class Vehicle : FollowingObject
     public bool StraightCameraControl, canControlCamera;
     protected Rigidbody rb;
 
-    private void Start()
+    virtual protected void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
@@ -18,5 +18,15 @@ public class Vehicle : FollowingObject
         get {
                 return rb == null? Vector3.zero : rb.velocity; }
         protected set { rb.velocity = value; }
+    }
+
+    virtual public void TurnOff()
+    {
+        enabled = false;
+    }
+
+    virtual public void TurnOn()
+    {
+        enabled = true;
     }
 }

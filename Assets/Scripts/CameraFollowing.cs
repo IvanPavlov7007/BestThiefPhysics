@@ -7,14 +7,14 @@ public class CameraFollowing : MonoBehaviour
     public HumanoidController humanoidController;
 
     [SerializeField]
-    private float smoothTime, rotateRatio, rotationSensitivity, gamePadRotationSensitivity, resetRotationTime, fieldOfViewFromVelocityCoefficient;
+    private float smoothTime, rotateRatio, rotationSensitivity, gamePadRotationSensitivity, resetRotationTime, minXAngle, maxXAngle, fieldOfViewFromVelocityCoefficient;
     [SerializeField]
     [Range(0f, 180f)]
     private float minFieldOfView, maxFieldOfView;
 
     private Vehicle vehicle;
     private Transform focus;
-    private float fieldOfViewDifference, idle_t;
+    private float fieldOfViewDifference, idle_t, xAngle, yAngle, init_xAngle, init_yAngle;
     private Vector3 focusCamDeltaPos, smoothVelocity;
     private Quaternion focusCamDeltaRot, mouseDeltaRot;
     private Camera cam;
@@ -28,15 +28,26 @@ public class CameraFollowing : MonoBehaviour
         cam = GetComponent<Camera>();
         humanoidController.onDisembark += HandleHumanoidDisembark;
         humanoidController.onSeat += HandleHumanoidSeat;
-        idle_t = 0f;
         resetFocus(humanoidController);
     }
 
     public void resetFocus(FollowingObject obj)
     {
+        
         focus = obj.Focus;
         focusCamDeltaPos = Quaternion.Inverse(focus.rotation) * (obj.CameraPosition.position - focus.position);
         mouseDeltaRot = Quaternion.identity;
+        Vector3 camRotation = Quaternion.LookRotation(-focusCamDeltaPos, Vector3.up).eulerAngles;
+        init_xAngle = camRotation.x;
+        init_yAngle = camRotation.y;
+        resetFocus();
+    }
+
+    public void resetFocus()
+    {
+        idle_t = 0f;
+        xAngle = init_xAngle;
+        yAngle = init_yAngle;
     }
 
     private void Update()
@@ -59,12 +70,22 @@ public class CameraFollowing : MonoBehaviour
         {
             idle_t += Time.deltaTime;
             if (idle_t >= resetRotationTime)
-                resetFocus(vehicle == null ? humanoidController as FollowingObject : vehicle as FollowingObject);
+            {
+                resetFocus();
+            }
         }
         else
+        {
+            x *= Time.deltaTime;
+            y *= Time.deltaTime;
             idle_t = 0f;
+            float nextXAngle = xAngle + x;
+            if (nextXAngle > minXAngle && nextXAngle < maxXAngle)
+                xAngle = nextXAngle;
+            yAngle += y;
+        }
 
-        mouseDeltaRot *= Quaternion.Euler(x, y, 0);
+        mouseDeltaRot = Quaternion.Euler(xAngle, yAngle, 0f);
     }
     private void LateUpdate()
     {

@@ -6,6 +6,8 @@ using System;
 public class OpressingBike : Vehicle
 {
     [SerializeField]
+    private ParticleSystem trail;
+    [SerializeField]
     private float VerticalTorqueMax, HorizontalTorqueMax, TractionMax, liftingCoefficient, maxLiftingForce, torqueToVelocityCoefficient;
     [SerializeField][Range(0f, 1f)]
     private float accelerationStep;
@@ -45,6 +47,8 @@ public class OpressingBike : Vehicle
         else
             speedRatio += accelerationLoss * Time.deltaTime * -Mathf.Sign(SpeedRatio);
         speedRatio = Mathf.Clamp(speedRatio, -1f,1f);
+        var main = trail.main;
+        main.startSpeed = Mathf.Clamp01(speedRatio) * 2.1f;
     }
 
     private void FixedUpdate()
@@ -87,5 +91,17 @@ public class OpressingBike : Vehicle
             UnityEditor.Handles.Label(transform.position - (transform.right - transform.up) * 2f, "Velocity: " + DisplayVelocity.magnitude.ToString(), customGizmosGUIStyle);
             UnityEditor.Handles.ArrowHandleCap(0, transform.position, Quaternion.FromToRotation(Vector3.forward, rb.velocity), 3f, EventType.Repaint);
         }
+    }
+
+    public override void TurnOn()
+    {
+        trail.Play();
+        base.TurnOn();
+    }
+
+    public override void TurnOff()
+    {
+        trail.Stop();
+        base.TurnOff();
     }
 }
